@@ -18,10 +18,7 @@ export async function POST(request: Request) {
 
     if (!result) throw new Error('Failed to create room')
 
-    return new Response(superjson.stringify({
-      data: result,
-      url: `/api/rooms/${result.id}`
-    }), {
+    return new Response(superjson.stringify(result), {
       status: status.CREATED,
       headers: {
         'Content-Type': 'application/json'
