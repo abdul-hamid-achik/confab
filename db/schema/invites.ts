@@ -1,5 +1,6 @@
 import { InferModel, relations } from 'drizzle-orm';
 import { index, pgTable, serial, text, uniqueIndex } from "drizzle-orm/pg-core";
+import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { rooms } from './rooms';
 
 export const invites = pgTable('invites', {
@@ -25,3 +26,6 @@ export const invitesRelations = relations(invites, ({ one }) => ({
 
 export type Invite = InferModel<typeof invites, "select">;
 export type NewInvite = InferModel<typeof invites, "insert">;
+
+export const getInvite = createSelectSchema(invites);
+export const newInvite = createInsertSchema(invites);
