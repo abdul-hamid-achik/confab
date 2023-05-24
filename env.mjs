@@ -4,9 +4,9 @@ import { z } from "zod"
 export const env = createEnv({
   server: {
     KV_URL: z.string().url().min(1),
-    KV_REST_API_URL: z.string().url().min(1).optional(),
-    KV_REST_API_TOKEN: z.string().min(1).optional(),
-    KV_REST_API_READ_ONLY_TOKEN: z.string().min(1).optional(),
+    KV_REST_API_URL: z.string().optional(),
+    KV_REST_API_TOKEN: z.string().optional(),
+    KV_REST_API_READ_ONLY_TOKEN: z.string().optional(),
     POSTGRES_URL: z.string().url().min(1),
     POSTGRES_URL_NON_POOLING: z.string().url().min(1),
     POSTGRES_USER: z.string().min(1),
