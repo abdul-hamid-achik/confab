@@ -16,9 +16,11 @@ export const env = createEnv({
     PUSHER_APP_ID: z.string().min(1),
     PUSHER_KEY: z.string().min(1),
     PUSHER_SECRET: z.string().min(1),
+    PUSHER_CLUSTER: z.string().min(1),
     CLERK_SECRET_KEY: z.string().min(1),
   },
   client: {
+    NEXT_PUBLIC_PUSHER_CLUSTER: z.string().min(1),
     NEXT_PUBLIC_PUSHER_KEY: z.string().min(1),
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().min(1),
   },

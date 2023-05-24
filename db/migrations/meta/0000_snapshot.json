@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "pg",
-  "id": "669a4f96-8932-4ddd-b3b5-c6d968f3c01e",
+  "id": "9e1e8ca0-a352-4349-b61d-f64402a4b56e",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "invites": {
@@ -10,9 +10,10 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "gen_random_uuid()"
         },
         "user_id": {
           "name": "user_id",
@@ -22,9 +23,16 @@
         },
         "room_id": {
           "name": "room_id",
-          "type": "text",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "invite_status",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
         }
       },
       "indexes": {
@@ -99,6 +107,62 @@
         },
         "message_room_id_index": {
           "name": "message_room_id_index",
+          "columns": [
+            "room_id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {}
+    },
+    "participants": {
+      "name": "participants",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "room_id": {
+          "name": "room_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "participant_role",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'listener'"
+        },
+        "status": {
+          "name": "status",
+          "type": "participant_status",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'disconnected'"
+        }
+      },
+      "indexes": {
+        "participant_user_id_index": {
+          "name": "participant_user_id_index",
+          "columns": [
+            "user_id"
+          ],
+          "isUnique": false
+        },
+        "participant_room_id_index": {
+          "name": "participant_room_id_index",
           "columns": [
             "room_id"
           ],
@@ -211,55 +275,6 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {}
     },
-    "room_users": {
-      "name": "room_users",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "room_id": {
-          "name": "room_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "role": {
-          "name": "role",
-          "type": "role",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'listener'"
-        }
-      },
-      "indexes": {
-        "room_user_id_index": {
-          "name": "room_user_id_index",
-          "columns": [
-            "user_id"
-          ],
-          "isUnique": false
-        },
-        "room_user_room_id_index": {
-          "name": "room_user_room_id_index",
-          "columns": [
-            "room_id"
-          ],
-          "isUnique": false
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {}
-    },
     "rooms": {
       "name": "rooms",
       "schema": "",
@@ -273,6 +288,18 @@
         },
         "name": {
           "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "topic": {
+          "name": "topic",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "description": {
+          "name": "description",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -339,6 +366,29 @@
     }
   },
   "enums": {
+    "invite_status": {
+      "name": "invite_status",
+      "values": {
+        "pending": "pending",
+        "accepted": "accepted",
+        "declined": "declined"
+      }
+    },
+    "participant_status": {
+      "name": "participant_status",
+      "values": {
+        "connected": "connected",
+        "disconnected": "disconnected"
+      }
+    },
+    "participant_role": {
+      "name": "participant_role",
+      "values": {
+        "speaker": "speaker",
+        "moderator": "moderator",
+        "listener": "listener"
+      }
+    },
     "reaction_type": {
       "name": "reaction_type",
       "values": {
@@ -359,14 +409,6 @@
         "hate_speech": "hate_speech",
         "nudity": "nudity",
         "violence": "violence"
-      }
-    },
-    "role": {
-      "name": "role",
-      "values": {
-        "speaker": "speaker",
-        "moderator": "moderator",
-        "listener": "listener"
       }
     }
   },

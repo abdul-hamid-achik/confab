@@ -8,11 +8,10 @@ dotenv.config();
 
 console.log(`Migrating database at ${process.env.POSTGRES_URL}`);
 
-const migrationClient = postgres(process.env.POSTGRES_URL as string, { max: 1, debug: true });
+const migrationClient = postgres(process.env.POSTGRES_URL as string, { max: 1 });
 
 migrate(drizzle(migrationClient), {
   migrationsFolder: './db/migrations',
-
 }).then(() => {
   console.log('Migration complete');
   migrationClient.end();
