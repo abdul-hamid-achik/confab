@@ -1,6 +1,14 @@
 "use client"
 
-import { Button } from "@/components/ui/button";
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { CreateInvite, NewInvite } from "@/db/schema/invites"
+import { CreateRoom, NewRoom } from "@/db/schema/rooms"
+import { useAuth } from "@clerk/nextjs"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+
+import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
@@ -9,31 +17,22 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { ToastAction } from "@/components/ui/toast";
-import { useToast } from "@/components/ui/use-toast";
-import { newInvite } from "@/db/schema/invites";
-import { newRoom } from "@/db/schema/rooms";
-import { useAuth } from "@clerk/nextjs";
-import { zodResolver } from "@hookform/resolvers/zod";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { ToastAction } from "@/components/ui/toast"
+import { useToast } from "@/components/ui/use-toast"
 
 export function CreateInviteForm() {
-  const form = useForm<z.infer<typeof newInvite>>({
-    resolver: zodResolver(newInvite),
+  const form = useForm<NewInvite>({
+    resolver: zodResolver(CreateInvite),
     defaultValues: {
       roomId: "",
-      userId: "",
+      email: "",
     },
   })
 
-  const onSubmit = async (values: z.infer<typeof newInvite>) => {
+  const onSubmit = async (values: NewInvite) => {
     console.log(values)
   }
 
@@ -42,16 +41,14 @@ export function CreateInviteForm() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
-          name="userId"
+          name="email"
           render={({ field }) => (
             <FormItem>
               <FormLabel>userId</FormLabel>
               <FormControl>
                 <Input placeholder="example" {...field} />
               </FormControl>
-              <FormDescription>
-                This is your public userId
-              </FormDescription>
+              <FormDescription>This is your public userId</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -65,9 +62,7 @@ export function CreateInviteForm() {
               <FormControl>
                 <Input placeholder="example" {...field} />
               </FormControl>
-              <FormDescription>
-                This is your public roomId
-              </FormDescription>
+              <FormDescription>This is your public roomId</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -78,29 +73,27 @@ export function CreateInviteForm() {
   )
 }
 
-
-
 export function CreateRoomForm() {
   const { userId, isSignedIn, getToken } = useAuth()
   const navigator = useRouter()
   const { toast } = useToast()
-  const form = useForm<z.infer<typeof newRoom>>({
-    resolver: zodResolver(newRoom),
+  const form = useForm<NewRoom>({
+    resolver: zodResolver(CreateRoom),
     defaultValues: {
       name: "",
       topic: "",
       description: "",
       moderatorId: userId || "",
     },
-  });
+  })
 
-  const onSubmit = async (values: z.infer<typeof newRoom>) => {
-    const token = await getToken();
+  const onSubmit = async (values: NewRoom) => {
+    const token = await getToken()
     const response = await fetch("/api/rooms", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(values),
     })
@@ -111,7 +104,12 @@ export function CreateRoomForm() {
         title: "Success.",
         description: "Your Room has been created.",
         action: (
-          <ToastAction altText="Goto room" onClick={() => navigator.push(`/rooms/${id}`)}>Click here</ToastAction>
+          <ToastAction
+            altText="Goto room"
+            onClick={() => navigator.push(`/rooms/${id}`)}
+          >
+            Click here
+          </ToastAction>
         ),
       })
     } else {
@@ -119,10 +117,10 @@ export function CreateRoomForm() {
       toast({
         title: "An error occurred.",
         description: `Unable to create room. ${error.message}`,
-        variant: "destructive"
+        variant: "destructive",
       })
     }
-  };
+  }
 
   return (
     <Form {...form}>
@@ -134,11 +132,13 @@ export function CreateRoomForm() {
             <FormItem>
               <FormLabel>Room Name</FormLabel>
               <FormControl>
-                <Input placeholder="Example Room" {...field} value={field.value as string} />
+                <Input
+                  placeholder="Example Room"
+                  {...field}
+                  value={field.value as string}
+                />
               </FormControl>
-              <FormDescription>
-                The name of the room.
-              </FormDescription>
+              <FormDescription>The name of the room.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -150,11 +150,13 @@ export function CreateRoomForm() {
             <FormItem>
               <FormLabel>Topic</FormLabel>
               <FormControl>
-                <Input placeholder="Theraphy/Casual Chat/Debating" {...field} value={field.value as string} />
+                <Input
+                  placeholder="Theraphy/Casual Chat/Debating"
+                  {...field}
+                  value={field.value as string}
+                />
               </FormControl>
-              <FormDescription>
-                The topic of the room.
-              </FormDescription>
+              <FormDescription>The topic of the room.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -166,10 +168,15 @@ export function CreateRoomForm() {
             <FormItem>
               <FormLabel>Description</FormLabel>
               <FormControl>
-                <Textarea placeholder="This discussion is about..." {...field} value={field.value as string} />
+                <Textarea
+                  placeholder="This discussion is about..."
+                  {...field}
+                  value={field.value as string}
+                />
               </FormControl>
               <FormDescription>
-                The description of the room. this will be displayed on the room page.
+                The description of the room. this will be displayed on the room
+                page.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -182,7 +189,12 @@ export function CreateRoomForm() {
             <FormItem>
               <FormLabel>Moderator</FormLabel>
               <FormControl>
-                <Input placeholder="You will see your username if you sign in" {...field} value={field.value as string} readOnly />
+                <Input
+                  placeholder="You will see your username if you sign in"
+                  {...field}
+                  value={field.value as string}
+                  readOnly
+                />
               </FormControl>
               <FormDescription>
                 The username of the room&apos;s moderator.
@@ -191,23 +203,21 @@ export function CreateRoomForm() {
             </FormItem>
           )}
         />
-        {
-          isSignedIn ? <Button type="submit">Create</Button> : <p className="max-w-[700px] text-sm text-muted-foreground sm:text-xl">
+        {isSignedIn ? (
+          <Button type="submit">Create</Button>
+        ) : (
+          <p className="max-w-[700px] text-sm text-muted-foreground sm:text-xl">
             <Button asChild className="mr-4">
-              <Link href="/sign-up">
-                Create an account
-              </Link>
+              <Link href="/sign-up">Create an account</Link>
             </Button>
             or
             <Button asChild className="mx-4">
-              <Link href="/sign-in">
-                Sign in
-              </Link>
+              <Link href="/sign-in">Sign in</Link>
             </Button>
             to create a room
           </p>
-        }
+        )}
       </form>
     </Form>
-  );
+  )
 }

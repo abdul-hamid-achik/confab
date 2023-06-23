@@ -1,26 +1,62 @@
 "use server"
-import { Badge } from "@/components/ui/badge"
-import { rooms } from "@/db/schema/rooms"
-import { db } from "@/lib/db"
+
+import { participants } from "@/db/schema/participants"
+import { Room, rooms } from "@/db/schema/rooms"
+import { clerkClient } from "@clerk/nextjs/server"
 import { eq } from "drizzle-orm"
 
-export default async function RoomPage({ params }: {
+import RoomComponent from "@/app/rooms/[roomId]/components"
+import { db } from "@/lib/db"
+
+async function getUsersList(userIds: string[]) {
+  if (userIds.length === 0) return []
+
+  return await clerkClient.users.getUserList({
+    userId: userIds,
+  })
+}
+
+export default async function RoomPage({
+  params,
+}: {
   params: {
     roomId: string
   }
 }) {
-  const [room] = await db.select().from(rooms).where(eq(rooms.id, params.roomId))
+  // const room = await db.query.rooms.findFirst({
+  //   where: eq(rooms.id, params.roomId),
+  //   with: {
+  //     participants: true
+  //   }
+  // })
 
-  return <section className="container  items-center gap-6 pb-8 pt-6 md:py-10">
-    <h1 className="text-3xl font-bold">{room.name}</h1>
+  const [room] = await db
+    .select()
+    .from(rooms)
+    .where(eq(rooms.id, params.roomId))
+    .limit(1)
+  const roomParticipants = await db
+    .select()
+    .from(participants)
+    .where(eq(participants.roomId, params.roomId))
 
-    <p className="text-lg font-medium">
-      {room.description}
-    </p>
+  const users = await getUsersList(
+    (roomParticipants.map((participant) => participant.userId) as string[]) ||
+    []
+  )
 
-    <Badge>
-      {room.topic}
-    </Badge>
+  const { id, name, topic, description, moderatorId } = room || ({} as Room)
 
-  </section>
+  return (
+    <section className="container items-center ">
+      <RoomComponent
+        id={id}
+        name={name}
+        topic={topic}
+        description={description}
+        moderatorId={moderatorId}
+        participants={users}
+      />
+    </section>
+  )
 }

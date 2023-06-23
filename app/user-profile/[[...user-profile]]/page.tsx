@@ -1,7 +1,7 @@
-import { UserProfile } from "@clerk/nextjs";
+import { UserProfile } from "@clerk/nextjs"
 
 const UserProfilePage = () => (
   <UserProfile path="/user-profile" routing="path" />
-);
+)
 
-export default UserProfilePage;
+export default UserProfilePage

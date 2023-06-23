@@ -1,21 +1,57 @@
+import Image from "next/image"
 import {
+  Cog,
+  Headphones,
+  LogIn,
   LucideProps,
+  Mic,
+  MicOff,
   Moon,
+  MoreHorizontal,
+  MoreVertical,
+  Phone,
+  PhoneOff,
+  Send,
+  Signal,
+  SignalHigh,
+  SignalLow,
+  SignalMedium,
+  SignalZero,
   SunMedium,
   Twitter,
+  X,
   type Icon as LucideIcon,
 } from "lucide-react"
-
-import Image from "next/image"
 
 export type Icon = LucideIcon
 
 export const Icons = {
+  x: X,
   sun: SunMedium,
   moon: Moon,
+  cog: Cog,
+  mic: Mic,
+  micOff: MicOff,
+  send: Send,
   twitter: Twitter,
+  moreHorizontal: MoreHorizontal,
+  moreVertical: MoreVertical,
+  phone: Phone,
+  phoneOff: PhoneOff,
+  signal: Signal,
+  signalHigh: SignalHigh,
+  signalMedium: SignalMedium,
+  signalLow: SignalLow,
+  signalZero: SignalZero,
+  headphones: Headphones,
+  logIn: LogIn,
   logo: (props: LucideProps) => (
-    <Image src="/logo.png" alt="Logo of confab website" width={24} height={24} />
+    <Image
+      src="/logo.png"
+      alt="Logo of confab website"
+      width={24}
+      height={24}
+    />
   ),
   gitHub: (props: LucideProps) => (
     <svg viewBox="0 0 438.549 438.549" {...props}>

@@ -1,11 +1,9 @@
 import Link from "next/link"
 
-import { Icons } from "@/components/icons"
+import { NavItem } from "@/types/nav"
 import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
-import { NavItem } from "@/types/nav"
-
-
+import { Icons } from "@/components/icons"
 
 interface MainNavProps {
   items?: NavItem[]

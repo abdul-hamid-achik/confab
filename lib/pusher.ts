@@ -1,5 +1,5 @@
-import { env } from '@/env.mjs';
-import Pusher from "pusher-js";
+import { env } from "@/env.mjs"
+import Pusher from "pusher-js"
 
 // export const pusher = new Pusher({
 //   appId: env.PUSHER_APP_ID,
@@ -11,8 +11,14 @@ import Pusher from "pusher-js";
 
 export const pusher = new Pusher(env.NEXT_PUBLIC_PUSHER_KEY, {
   cluster: env.NEXT_PUBLIC_PUSHER_CLUSTER,
-});
+  authEndpoint: "/api/pusher",
+  auth: {
+    params: {
+      username: ""
+    }
+  }
+})
 
 export function createChannel(channelName: string) {
-  return pusher.subscribe(channelName);
+  return pusher.subscribe(channelName)
 }
